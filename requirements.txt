@@ -10,4 +10,4 @@ python-telegram-bot==11.1.0
 setuptools==70.0.0
 six==1.11.0
 wheel==0.38.1
-requests==2.32.2
+requests==2.32.4
