@@ -7,7 +7,7 @@ idna==3.7
 pip==23.3
 pycparser==2.19
 python-telegram-bot==11.1.0
-setuptools==70.0.0
+setuptools==78.1.1
 six==1.11.0
 wheel==0.38.1
 requests==2.32.2
