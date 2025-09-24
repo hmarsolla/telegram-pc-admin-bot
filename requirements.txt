@@ -4,7 +4,7 @@ cffi==1.14.5
 cryptography==43.0.1
 future==0.18.3
 idna==3.7
-pip==23.3
+pip==25.2
 pycparser==2.19
 python-telegram-bot==11.1.0
 setuptools==70.0.0
