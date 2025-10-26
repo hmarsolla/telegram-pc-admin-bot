@@ -1,4 +1,29 @@
+# Python
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
 env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
 .vscode/
+.idea/
 *.pyproj
+*.sln
+
+# Environment Variables
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
