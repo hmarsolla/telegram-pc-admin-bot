@@ -42,10 +42,16 @@ async def shutdown(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def shutdown_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == 'Yes':
-        await update.message.reply_text('O pai ta off!!', reply_markup=ReplyKeyboardRemove())
-        os.system('shutdown /s /t 1')
+        await update.message.reply_text('Shutting system down', reply_markup=ReplyKeyboardRemove())
+        
+        # Execute appropriate shutdown command based on OS
+        if os.name == 'nt':  # Windows
+            os.system('shutdown /s /t 1')
+        else:  # Linux/Unix
+            os.system('sudo shutdown -h now')
+            
     elif update.message.text == 'No':
-        await update.message.reply_text('Chama se mudar de ideia!', reply_markup=ReplyKeyboardRemove())
+        await update.message.reply_text('You can call me if you change your mind!', reply_markup=ReplyKeyboardRemove())
 
     return ConversationHandler.END
 
