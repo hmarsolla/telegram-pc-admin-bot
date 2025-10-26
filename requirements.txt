@@ -1,13 +1,2 @@
-asn1crypto==0.24.0
-certifi==2018.10.15
-cffi==1.11.5
-cryptography==2.3.1
-future==0.17.1
-idna==2.7
-pip==18.1
-pycparser==2.19
-python-telegram-bot==11.1.0
-setuptools==40.5.0
-six==1.11.0
-wheel==0.32.2
-requests==2.24.0
+python-telegram-bot==21.7
+requests==2.32.3

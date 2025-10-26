@@ -1,46 +1,86 @@
 import logging
 import socket
-import telegram
 import config
-from telegram.ext import CommandHandler, Updater
+import os
+from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram.ext import Application, CommandHandler, ConversationHandler, MessageHandler, filters, ContextTypes
 from requests import get
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                      level=logging.INFO)
 
-updater = Updater(token=config.TOKEN)
-dispatcher = updater.dispatcher
-
 # Commands:
-def start(bot, update):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.chat_id in config.CHATIDLIST:
-        bot.send_message(chat_id=update.message.chat_id, text="I'm a bot, please talk to me!")
+        await update.message.reply_text("I'm a bot, please talk to me!")
 
-def where(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text=f'Chat_id: {update.message.chat_id}')
+async def where(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(f'Chat_id: {update.message.chat_id}')
     if update.message.chat_id in config.CHATIDLIST:
         ip_list = socket.gethostbyname_ex(socket.gethostname())
-        bot.send_message(chat_id=update.message.chat_id, text=f'Hostname: {ip_list[0]}')
-        for number,ip in enumerate(ip_list[2]):
+        await update.message.reply_text(f'Hostname: {ip_list[0]}')
+        for number, ip in enumerate(ip_list[2]):
             msg = f'IP #{number + 1} - {ip}'
-            bot.send_message(chat_id=update.message.chat_id, text=msg)
+            await update.message.reply_text(msg)
         
         public_ip = get('https://api.ipify.org').text
-        bot.send_message(chat_id=update.message.chat_id, text=f'Public IP: {public_ip}')
+        await update.message.reply_text(f'Public IP: {public_ip}')
 
-def getid(bot, update):
-        bot.send_message(chat_id=update.message.chat_id, text=str(update.message.chat_id))
+async def getid(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text(str(update.message.chat_id))
 
-# Handlers
-start_handler = CommandHandler('start', start)
-dispatcher.add_handler(start_handler)
 
-where_handler = CommandHandler('where', where)
-dispatcher.add_handler(where_handler)
+SHUTDOWN = 1
 
-getid_handler = CommandHandler('getid', getid)
-dispatcher.add_handler(getid_handler)
+async def shutdown(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.chat_id in config.CHATIDLIST:
+        yes_no = [['Yes', 'No']]
+        await update.message.reply_text('Are you sure?', reply_markup=ReplyKeyboardMarkup(yes_no, one_time_keyboard=True))
+        return SHUTDOWN
+    else:
+        return ConversationHandler.END
 
-#if __name__ == 'main':
-print('IP Bot Started')
-updater.start_polling()
+async def shutdown_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.message.text == 'Yes':
+        await update.message.reply_text('O pai ta off!!', reply_markup=ReplyKeyboardRemove())
+        os.system('shutdown /s /t 1')
+    elif update.message.text == 'No':
+        await update.message.reply_text('Chama se mudar de ideia!', reply_markup=ReplyKeyboardRemove())
+
+    return ConversationHandler.END
+
+async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await update.message.reply_text('Cancelled')
+    return ConversationHandler.END
+
+def main():
+    import asyncio
+    
+    # Create and set event loop for Windows
+    if os.name == 'nt':  # Windows
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+    
+    # Create the Application
+    application = Application.builder().token(config.TOKEN).build()
+
+    # Add handlers
+    application.add_handler(CommandHandler('start', start))
+    application.add_handler(CommandHandler('where', where))
+    application.add_handler(CommandHandler('getid', getid))
+
+    conv_handler = ConversationHandler(
+        entry_points=[CommandHandler('shutdown', shutdown)],
+        states={
+            SHUTDOWN: [MessageHandler(filters.Regex('^(Yes|No)$'), shutdown_cmd)]
+        },
+        fallbacks=[CommandHandler('cancel', cancel)]
+    )
+
+    application.add_handler(conv_handler)
+
+    print('IP Bot Started')
+    application.run_polling(allowed_updates=Update.ALL_TYPES)
+
+if __name__ == '__main__':
+    main()
