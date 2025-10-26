@@ -1,5 +1,7 @@
 # Telegram PC Admin Bot
 
+> **Note:** This repository was formerly known as "telegram-bot-get-ip" and has been expanded with comprehensive PC administration features.
+
 A comprehensive Telegram bot for remotely monitoring and controlling your PC from anywhere. Get system information, manage files, take screenshots, and execute system commands - all through Telegram messages.
 
 ## 🌟 Features
