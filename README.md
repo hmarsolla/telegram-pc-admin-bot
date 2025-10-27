@@ -118,7 +118,7 @@ docker build -t telegram-pc-admin-bot .
 ### Run the Container
 
 ```bash
-docker run -v /path/to/your/config.py:/app/config.py telegram-pc-admin-bot
+docker run -v /path/to/your/.env:/app/.env telegram-pc-admin-bot
 ```
 
 **Note:** Docker deployment has limitations with system control commands (shutdown, restart, etc.) as they affect the host system.
